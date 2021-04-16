@@ -13,32 +13,41 @@ import kotlinx.coroutines.launch
 class MainViewModel(private val taskRepository: TaskRepository):ViewModel(), Observable{
 
     val task = taskRepository.tasks
+    lateinit var editableTask : Task
 
     @Bindable
     val inputTask = MutableLiveData<String>()
     @Bindable
     val inputDescription = MutableLiveData<String>()
 
-
+    @Bindable
+    val datePicker  = MutableLiveData<String>()
 
     fun completed(){
         val title = inputTask.value!!
         val description = inputDescription.value!!
-        delete(Task(id = 0, taskTitle = title, taskDescription = description))
+        val date = datePicker.value!!
+        delete(Task(
+            id = 0,
+            taskTitle = title,
+            taskDescription = description,
+            date = date
+        ))
     }
 
 
     fun saveOrUpdate(){
         val title = inputTask.value!!
         val description = inputDescription.value
-        insert(Task(id = 0, title, description))
+        val date = datePicker.value
+        insertTask(Task(id = 0, title, description, date))
         inputTask.value = null
         inputDescription.value = null
 
     }
 
 
-    fun insert(task: Task):Job = viewModelScope.launch {
+    fun insertTask(task: Task):Job = viewModelScope.launch {
             taskRepository.insert(task)
         }
 

@@ -6,9 +6,11 @@ import androidx.databinding.Observable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.recyclerview.widget.RecyclerView
 import com.example.remindermvvm.TaskListener
 import com.example.remindermvvm.models.Task
 import com.example.remindermvvm.repositories.TaskRepository
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -25,6 +27,9 @@ class MainViewModel(private val taskRepository: TaskRepository):ViewModel(), Obs
     @Bindable
     var datePicker  = MutableLiveData<String>()
 
+    @Bindable
+    var date_holder = MutableLiveData<String>()
+
 
     fun saveOrUpdate(view: View){
         val title = inputTask.value
@@ -34,6 +39,8 @@ class MainViewModel(private val taskRepository: TaskRepository):ViewModel(), Obs
             insertTask(Task(id = 0, title, description, date))
             inputTask.value = null
             inputDescription.value = null
+            datePicker.value = null
+
             taskListener?.onSuccess()
         }
         else{
@@ -41,6 +48,8 @@ class MainViewModel(private val taskRepository: TaskRepository):ViewModel(), Obs
             return
         }
     }
+
+
 
     private fun insertTask(task: Task):Job = viewModelScope.launch {
             taskRepository.insert(task)

@@ -17,6 +17,7 @@ import com.example.remindermvvm.source.local.TaskDatabase
 import com.example.remindermvvm.utils.MainViewModelFactory
 import com.example.remindermvvm.viewModels.MainViewModel
 import com.example.remindermvvm.views.TaskRecyclerViewAdapter
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(){
@@ -37,16 +38,30 @@ class MainActivity : AppCompatActivity(){
         viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
         binding.myViewModel = viewModel
         binding.lifecycleOwner = this
+        binding.taskRecyclerView.attachFab(fab_add)
         setContentView(binding.root)
 
         viewModel.task.observe(this, {
             adapter =  TaskRecyclerViewAdapter(taskList = it as MutableList<Task>)
+
         })
+
         initRecyclerView()
         openBottomSheetDialog()
 
     }
 
+    private fun RecyclerView.attachFab(fab : FloatingActionButton) {
+        this.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0)
+                    fab.hide()
+                else if (dy < 0)
+                    fab.show()
+            }
+        })
+    }
 
     private fun initRecyclerView(){
         displayTasks()

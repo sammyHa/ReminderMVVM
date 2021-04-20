@@ -60,6 +60,8 @@ class BottomSheetFragment:BottomSheetDialogFragment(),TaskListener{
 
         cancel.setOnClickListener {
             date_holder_container.visibility = View.GONE
+            date_holder_tv.text = null
+            model.datePicker.value = null
         }
         date_pick_iv.setOnClickListener {
             Log.e(ContentValues.TAG, "onActivityCreated: Date selected!!!!")
@@ -114,6 +116,8 @@ class BottomSheetFragment:BottomSheetDialogFragment(),TaskListener{
 
     override fun onSuccess() {
         context?.toast("Task added")
+        date_holder_tv.text = null
+        date_holder_container.visibility = View.GONE
     }
 
     override fun onFailure(message: String) {

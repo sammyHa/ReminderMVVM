@@ -6,7 +6,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.remindermvvm.databinding.ActivityMainBinding
 import com.example.remindermvvm.models.Task
 import com.example.remindermvvm.repositories.TaskRepository
@@ -21,9 +23,12 @@ class MainActivity : AppCompatActivity(){
 
     lateinit var binding:ActivityMainBinding
     lateinit var viewModel: MainViewModel
+    lateinit var adapter : TaskRecyclerViewAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         val dao: TaskDao = TaskDatabase.getInstance(applicationContext).taskDao
@@ -32,37 +37,58 @@ class MainActivity : AppCompatActivity(){
         viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
         binding.myViewModel = viewModel
         binding.lifecycleOwner = this
+        setContentView(binding.root)
+
+        viewModel.task.observe(this, {
+            adapter =  TaskRecyclerViewAdapter(taskList = it as MutableList<Task>)
+        })
         initRecyclerView()
-        addTask()
+        openBottomSheetDialog()
+
     }
 
 
     private fun initRecyclerView(){
-        binding.taskRecyclerView.layoutManager = LinearLayoutManager(this)
         displayTasks()
+        binding.taskRecyclerView.layoutManager = LinearLayoutManager(this)
     }
 
     private fun displayTasks(){
+
         viewModel.task.observe(this, {
-            binding.taskRecyclerView.adapter = TaskRecyclerViewAdapter(taskList = it as MutableList<Task>
-            ) { selectedItem: Task -> run {
-                itemClicked(selectedItem)
-                }
-            }
+            binding.taskRecyclerView.adapter = adapter
         })
+        swipeToDelete()
+
     }
 
     private fun itemClicked(task:Task){
         Toast.makeText(this, task.taskTitle, Toast.LENGTH_SHORT).show()
     }
 
-    private fun addTask(){
-
+    private fun openBottomSheetDialog(){
         fab_add.setOnClickListener {
             Log.d("TAG","Saved")
             BottomSheetFragment().apply {
                 show(supportFragmentManager, "BottomSheetFragment")
             }
         }
+    }
+
+    private fun swipeToDelete(){
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                viewModel.delete(adapter.getTaskAt(position))
+
+            }
+
+        }).attachToRecyclerView(binding.taskRecyclerView)
+
+
     }
 }

@@ -1,4 +1,4 @@
-package com.example.remindermvvm.utils
+package com.samimhakimi.remindermvvm.utils
 
 import android.annotation.SuppressLint
 import java.text.SimpleDateFormat

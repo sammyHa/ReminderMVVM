@@ -1,4 +1,4 @@
-package com.example.remindermvvm
+package com.samimhakimi.remindermvvm
 
 import org.junit.Test
 

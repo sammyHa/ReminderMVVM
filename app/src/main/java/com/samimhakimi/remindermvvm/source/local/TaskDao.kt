@@ -1,8 +1,8 @@
-package com.example.remindermvvm.source.local
+package com.samimhakimi.remindermvvm.source.local
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.example.remindermvvm.models.Task
+import com.samimhakimi.remindermvvm.models.Task
 
 @Dao
 interface TaskDao {

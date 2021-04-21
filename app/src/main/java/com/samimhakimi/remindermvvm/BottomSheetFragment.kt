@@ -1,4 +1,4 @@
-package com.example.remindermvvm
+package com.samimhakimi.remindermvvm
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -13,15 +13,15 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
-import com.example.remindermvvm.databinding.BottomSheetFragmentBinding
-import com.example.remindermvvm.utils.toast
-import com.example.remindermvvm.viewModels.MainViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.samimhakimi.remindermvvm.databinding.BottomSheetFragmentBinding
+import com.samimhakimi.remindermvvm.utils.toast
+import com.samimhakimi.remindermvvm.viewModels.MainViewModel
 import kotlinx.android.synthetic.main.bottom_sheet_fragment.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class BottomSheetFragment:BottomSheetDialogFragment(),TaskListener{
+class BottomSheetFragment:BottomSheetDialogFragment(), TaskListener {
 
     private var _binding: BottomSheetFragmentBinding? = null
     private val binding get() = _binding
@@ -66,10 +66,7 @@ class BottomSheetFragment:BottomSheetDialogFragment(),TaskListener{
         date_pick_iv.setOnClickListener {
             Log.e(ContentValues.TAG, "onActivityCreated: Date selected!!!!")
             getDateTimeCalender()
-           date_holder_container.visibility = View.VISIBLE
-
-
-
+           //date_holder_container.visibility = View.VISIBLE
         }
 
 
@@ -103,6 +100,11 @@ class BottomSheetFragment:BottomSheetDialogFragment(),TaskListener{
             val dateString = sdf.format(cal.time)
            model.datePicker.value = dateString
             date_holder_tv.text = dateString
+            if (model.datePicker.value !=null){
+                date_holder_container.visibility =  View.VISIBLE
+            }else{
+                date_holder_container.visibility =  View.GONE
+            }
         }, year, month1, day)
         dpd.show()
 
@@ -123,5 +125,6 @@ class BottomSheetFragment:BottomSheetDialogFragment(),TaskListener{
     override fun onFailure(message: String) {
         context?.toast(message)
     }
+
 
 }

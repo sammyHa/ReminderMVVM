@@ -1,4 +1,4 @@
-package com.example.remindermvvm
+package com.samimhakimi.remindermvvm
 
 interface TaskListener {
     fun onStarted()

@@ -7,7 +7,7 @@
         <import type="android.view.View"/>
         <variable
             name="bottomSheetViewModel"
-            type="com.example.remindermvvm.viewModels.MainViewModel" />
+            type="com.samimhakimi.remindermvvm.viewModels.MainViewModel" />
     </data>
 
     <FrameLayout

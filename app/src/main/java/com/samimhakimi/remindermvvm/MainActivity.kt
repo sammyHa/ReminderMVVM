@@ -1,4 +1,4 @@
-package com.example.remindermvvm
+package com.samimhakimi.remindermvvm
 
 import android.os.Bundle
 import android.util.Log
@@ -6,30 +6,33 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.remindermvvm.databinding.ActivityMainBinding
-import com.example.remindermvvm.models.Task
-import com.example.remindermvvm.repositories.TaskRepository
-import com.example.remindermvvm.source.local.TaskDao
-import com.example.remindermvvm.source.local.TaskDatabase
-import com.example.remindermvvm.utils.MainViewModelFactory
-import com.example.remindermvvm.viewModels.MainViewModel
-import com.example.remindermvvm.views.TaskRecyclerViewAdapter
+import com.google.android.material.snackbar.Snackbar
+import com.samimhakimi.remindermvvm.databinding.ActivityMainBinding
+import com.samimhakimi.remindermvvm.models.Task
+import com.samimhakimi.remindermvvm.repositories.TaskRepository
+import com.samimhakimi.remindermvvm.source.local.TaskDao
+import com.samimhakimi.remindermvvm.source.local.TaskDatabase
+import com.samimhakimi.remindermvvm.utils.MainViewModelFactory
+import com.samimhakimi.remindermvvm.utils.toast
+import com.samimhakimi.remindermvvm.viewModels.MainViewModel
+import com.samimhakimi.remindermvvm.views.TaskRecyclerViewAdapter
+import com.samimhakimi.remindermvvm.views.onItemClickListener
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.flow.collect
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity(),onItemClickListener{
 
-    lateinit var binding:ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     lateinit var viewModel: MainViewModel
     lateinit var adapter : TaskRecyclerViewAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         val dao: TaskDao = TaskDatabase.getInstance(applicationContext).taskDao
         val repository = TaskRepository(dao)
@@ -40,8 +43,8 @@ class MainActivity : AppCompatActivity(){
 
         setContentView(binding.root)
 
-        viewModel.task.observe(this, {
-            adapter =  TaskRecyclerViewAdapter(taskList = it as MutableList<Task>)
+        viewModel.taskDao.observe(this, {
+            adapter =  TaskRecyclerViewAdapter(taskList = it as MutableList<Task>,this)
 
         })
 
@@ -55,20 +58,6 @@ class MainActivity : AppCompatActivity(){
 
 
 
-//    private fun RecyclerView.attachFab(fab : FloatingActionButton) {
-//        this.addOnScrollListener(object : RecyclerView.OnScrollListener(){
-//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                super.onScrolled(recyclerView, dx, dy)
-//                if (dy > 0)
-//                    fab.hide()
-//                else if (dy < 0)
-//                    fab.show()
-//            }
-//
-//        })
-//
-//    }
-
     private fun initRecyclerView(){
         displayTasks()
         binding.taskRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -76,18 +65,19 @@ class MainActivity : AppCompatActivity(){
 
     private fun displayTasks(){
 
-        viewModel.task.observe(this, {
+        viewModel.taskDao.observe(this, {
             binding.taskRecyclerView.adapter = adapter
         })
         swipeToDelete()
 
     }
 
-    private fun itemClicked(task:Task){
+    private fun itemClicked(task: Task){
         Toast.makeText(this, task.taskTitle, Toast.LENGTH_SHORT).show()
     }
 
     private fun openBottomSheetDialog(){
+
         fab_add.setOnClickListener {
             Log.d("TAG","Saved")
             BottomSheetFragment().apply {
@@ -98,6 +88,7 @@ class MainActivity : AppCompatActivity(){
 
     private fun swipeToDelete(){
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                 return false
             }
@@ -106,10 +97,36 @@ class MainActivity : AppCompatActivity(){
                 val position = viewHolder.adapterPosition
                 viewModel.delete(adapter.getTaskAt(position))
 
+
+
+
             }
 
         }).attachToRecyclerView(binding.taskRecyclerView)
 
+        lifecycleScope.launchWhenCreated {
+            viewModel.taskEvent.collect {event ->
+                when(event){
+                    is MainViewModel.TaskEvent.ShowUndoDeleteMessage ->{
+                        Snackbar.make(requireViewById(R.id.task_recyclerView), "Task Deleted", Snackbar.LENGTH_LONG)
+                            .setAction("UNDO"){
+                                viewModel.onUndoDeleted(event.task)
+                            }
+                    }
+                }.show()
+            }
+        }
 
+    }
+
+    override fun onItemClicked(task: Task) {
+
+        viewModel.onTaskSelected(task)
+        toast("task clicked ${task.taskTitle}")
+
+    }
+
+    override fun onCheckedBoxClicked(task: Task, isChecked: Boolean) {
+        viewModel.onTaskCheckedChanged(task, isChecked)
     }
 }

@@ -5,7 +5,7 @@
     <data>
         <variable
             name="myVModel"
-            type="com.example.remindermvvm.viewModels.MainViewModel" />
+            type="com.samimhakimi.remindermvvm.viewModels.MainViewModel" />
     </data>
 <androidx.cardview.widget.CardView
     android:layout_width="match_parent"
@@ -21,15 +21,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-<!--    <com.google.android.material.checkbox.MaterialCheckBox-->
-<!--        android:id="@+id/is_completed"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_alignParentEnd="true"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="15dp"-->
-<!--        android:minWidth="0dp"-->
-<!--        android:minHeight="0dp"-->
-<!--        android:onClick="@{()->myVModel.completed()}" />-->
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/is_completed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerInParent="true"
+        android:layout_marginEnd="15dp"
+        android:minWidth="0dp"
+        android:minHeight="0dp" />
 
     <TextView
         android:id="@+id/task_title"
@@ -40,7 +40,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:text="Work on the UI design aldfkalf sadfd d "
-        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@id/is_completed"
         android:textColor="#000000"
         android:textSize="18sp" />
 
@@ -52,7 +52,7 @@
         android:paddingStart="8dp"
         android:layout_margin="8dp"
         android:paddingBottom="8dp"
-        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@id/is_completed"
         android:text="Task description goes in here asdfalkdf lakdjfla lkdasjf d  "
         android:textColor="#717171"
         android:textSize="12dp" />
@@ -70,7 +70,7 @@
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:layout_alignParentStart="true"
-        android:textColor="#00BCD4"
+        android:textColor="#07B5A4"
         android:textSize="16dp" />
 
 </RelativeLayout>

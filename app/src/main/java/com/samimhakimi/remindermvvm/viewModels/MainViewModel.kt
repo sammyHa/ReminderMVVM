@@ -1,4 +1,4 @@
-package com.example.remindermvvm.viewModels
+package com.samimhakimi.remindermvvm.viewModels
 
 import android.view.View
 import androidx.databinding.Bindable
@@ -6,19 +6,22 @@ import androidx.databinding.Observable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.recyclerview.widget.RecyclerView
-import com.example.remindermvvm.TaskListener
-import com.example.remindermvvm.models.Task
-import com.example.remindermvvm.repositories.TaskRepository
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.samimhakimi.remindermvvm.TaskListener
+import com.samimhakimi.remindermvvm.models.Task
+import com.samimhakimi.remindermvvm.repositories.TaskRepository
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel(private val taskRepository: TaskRepository):ViewModel(), Observable{
 
-    val task = taskRepository.tasks
+    val taskDao = taskRepository.tasks
     lateinit var editableTask : Task
     var taskListener: TaskListener? = null
+
+    private val taskEvenChannel = Channel<TaskEvent>()
+    val taskEvent = taskEvenChannel.receiveAsFlow()
 
     @Bindable
     val inputTask = MutableLiveData<String>()
@@ -40,13 +43,18 @@ class MainViewModel(private val taskRepository: TaskRepository):ViewModel(), Obs
             inputTask.value = null
             inputDescription.value = null
             datePicker.value = null
-
             taskListener?.onSuccess()
         }
         else{
             taskListener?.onFailure("Title cannot be empty")
             return
         }
+    }
+
+    fun updateTask(){
+        inputTask.value = editableTask.taskTitle
+        inputDescription.value = editableTask.taskDescription
+        datePicker.value = editableTask.taskDueDate
     }
 
 
@@ -61,6 +69,15 @@ class MainViewModel(private val taskRepository: TaskRepository):ViewModel(), Obs
 
      fun delete(task: Task):Job = viewModelScope.launch {
         taskRepository.delete(task)
+         taskEvenChannel.send(TaskEvent.ShowUndoDeleteMessage(task))
+    }
+    fun onUndoDeleted(task: Task): Job = viewModelScope.launch {
+        insertTask(task)
+    }
+
+    fun onTaskSelected(task: Task){}
+    fun onTaskCheckedChanged(task: Task, isChecked:Boolean) = viewModelScope.launch {
+        update(task.copy(completed = isChecked))
     }
 
     override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
@@ -69,4 +86,9 @@ class MainViewModel(private val taskRepository: TaskRepository):ViewModel(), Obs
 
     override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
     }
+
+    sealed class TaskEvent{
+        data class ShowUndoDeleteMessage(val task: Task):TaskEvent()
+    }
+
 }

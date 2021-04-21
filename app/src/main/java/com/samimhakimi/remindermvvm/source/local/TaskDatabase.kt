@@ -1,21 +1,26 @@
-package com.example.remindermvvm.source.local
+package com.samimhakimi.remindermvvm.source.local
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.remindermvvm.models.Task
+import com.samimhakimi.remindermvvm.models.Task
 
 @Database(entities = [Task::class], version = 1)
 abstract class TaskDatabase:RoomDatabase() {
 
-    abstract val taskDao:TaskDao
+    abstract val taskDao: TaskDao
+
+
 
     companion object{
+
+
+
         @Volatile
         private var INSTANCE : TaskDatabase? = null
 
-        fun getInstance(context:Context):TaskDatabase{
+        fun getInstance(context:Context): TaskDatabase {
             synchronized(this){
                 var instance = INSTANCE
                 if (instance == null){

@@ -6,14 +6,14 @@
     <data>
         <variable
             name="myViewModel"
-            type="com.example.remindermvvm.viewModels.MainViewModel" />
+            type="com.samimhakimi.remindermvvm.viewModels.MainViewModel" />
     </data>
 
 
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="com.samimhakimi.remindermvvm.MainActivity">
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -38,7 +38,7 @@
             android:layout_margin="30dp"
             app:backgroundTintMode="@color/white"
             app:borderWidth="0dp"
-            android:backgroundTint="#F44336" />
+            android:backgroundTint="#07B5A4" />
 
       </RelativeLayout>
 

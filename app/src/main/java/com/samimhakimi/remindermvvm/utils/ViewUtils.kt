@@ -1,4 +1,4 @@
-package com.example.remindermvvm.utils
+package com.samimhakimi.remindermvvm.utils
 
 import android.content.Context
 import android.widget.Toast

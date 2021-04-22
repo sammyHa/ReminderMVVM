@@ -94,6 +94,7 @@ class BottomSheetFragment:BottomSheetDialogFragment(), TaskListener {
         hour = cal.get(Calendar.HOUR)
         minute = cal.get(Calendar.MINUTE)
 
+
         val dpd = DatePickerDialog(requireContext(), { view, year, month, dayOfMonth ->
             val sdf = SimpleDateFormat("EEE, MMM, dd");
             cal.set(year, month, dayOfMonth);
@@ -107,7 +108,6 @@ class BottomSheetFragment:BottomSheetDialogFragment(), TaskListener {
             }
         }, year, month1, day)
         dpd.show()
-
 
     }
 

@@ -1,6 +1,7 @@
 package com.samimhakimi.remindermvvm.views
 
 import android.content.ContentValues.TAG
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -64,6 +65,9 @@ class TaskRecyclerViewAdapter(val taskList: MutableList<Task>,private val listen
                 isCompleted.isChecked = task.completed
                 taskTitle.paint.isStrikeThruText = task.completed
                 taskDescription.paint.isStrikeThruText = task.completed
+                if (task.completed){
+                    taskDueDate.setTextColor(Color.RED)
+                }
 
             }
 

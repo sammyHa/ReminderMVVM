@@ -75,7 +75,9 @@ class MainViewModel(private val taskRepository: TaskRepository):ViewModel(), Obs
         insertTask(task)
     }
 
-    fun onTaskSelected(task: Task){}
+    fun onTaskSelected(task: Task) = viewModelScope.launch{
+
+    }
     fun onTaskCheckedChanged(task: Task, isChecked:Boolean) = viewModelScope.launch {
         update(task.copy(completed = isChecked))
     }

@@ -1,9 +1,11 @@
 package com.samimhakimi.remindermvvm
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -104,13 +106,16 @@ class MainActivity : AppCompatActivity(),onItemClickListener{
 
         }).attachToRecyclerView(binding.taskRecyclerView)
 
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launchWhenStarted {
             viewModel.taskEvent.collect {event ->
                 when(event){
                     is MainViewModel.TaskEvent.ShowUndoDeleteMessage ->{
-                        Snackbar.make(requireViewById(R.id.task_recyclerView), "Task Deleted", Snackbar.LENGTH_LONG)
+                        Snackbar.make(requireViewById(R.id.task_recyclerView), "1 Completed", Snackbar.LENGTH_LONG)
+                            .setTextColor(Color.WHITE)
+                            .setActionTextColor(ContextCompat.getColor(applicationContext, R.color.undoColor))
                             .setAction("UNDO"){
                                 viewModel.onUndoDeleted(event.task)
+
                             }
                     }
                 }.show()
